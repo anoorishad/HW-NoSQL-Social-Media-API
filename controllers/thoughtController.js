@@ -1,11 +1,11 @@
-const { Course } = require('../../UW-VIRT-FSF-FT-03-2022-U-LOL/week-09/18-NoSQL/01-Activities/28-Stu_Mini-Project/Main/models');
+
 const { User, Thought } = require('../models');
 
 module.exports = {
     // Get all thoughts
     getThoughts(req, res) {
         Thought.find()
-            .then((thoughts) => res.json(courses))
+            .then((thoughts) => res.json(thoughts))
             .catch((err) => res.status(500).json(err));
     },
     // Get a single thought
@@ -22,10 +22,21 @@ module.exports = {
     //  Create a thought
     createThought(req, res) {
         Thought.create(req.body)
-            .then((thought) => res.json(course))
+            .then(async (thought) => {
+                return User.findOneAndUpdate(
+                    { _id: req.body.userId },
+                    { $addToSet: { thoughts: thought._id } },
+                    { new: true }
+                );
+            })
+            .then(async (user) =>
+                !user
+                    ? res.status(404).json({ message: 'Thought created, but found no user with that ID' })
+                    : res.json({message:"Thought Created"})
+            )
             .catch((err) => {
                 console.log(err);
-                return res.status(500).json(err);
+                res.status(500).json(err);
             });
     },
     // Update a thought
