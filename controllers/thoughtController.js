@@ -1,4 +1,3 @@
-
 const { User, Thought } = require('../models');
 
 module.exports = {
@@ -82,10 +81,10 @@ module.exports = {
     },
     // Delete a reaction
     deleteReaction(req, res) {
-        Thought.findOneAndDelete(
+        Thought.findOneAndUpdate(
             { _id: req.params.thoughtId },
             { $pull: { "reactions": req.params.reactionsId } },
-            { new: true }
+            { runValidators: true, new: true }
         )
             .then((thought) =>
                 !thought
